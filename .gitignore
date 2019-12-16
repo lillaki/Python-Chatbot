@@ -1,0 +1,5 @@
+
+# Ignore project files
+/venv
+.idea
+/__pycache__
