@@ -2,20 +2,18 @@ import random
 import pandas as pd
 import nltk
 import re  # to do regular expression matching operations
-import database  # Add funny questions and answers to the database
+import time
 from nltk.stem import wordnet  # to perform lemmitization
 from sklearn.feature_extraction.text import TfidfVectorizer  # to perform tfidf
 from nltk import pos_tag  # for parts of speech
 from sklearn.metrics.pairwise import cosine_similarity
 
 nltk.download('averaged_perceptron_tagger')
-nltk.download('stopwords')
 
 df = pd.read_excel('dialog_talk_agent.xlsx')
 # df.shape[0]  # returns the number of rows in dataset
 df.ffill(axis=0, inplace=True)  # fills the null value with the previous value
-# print(df)
-df = database.add_answers(df)
+print(df)
 
 # Keyword Matching
 GREETING_INPUTS = ("hello", "hi", "hi there", "hey")
@@ -64,7 +62,6 @@ def chat(text):  # defining a function that returns response to query using tf-i
         tfidf_matrix = tfidf_vectorizer.fit_transform(z)
         cos_similarity = cosine_similarity(tfidf_matrix[0], tfidf_matrix)
         similarity_list.append(cos_similarity[0][1])
-        index = lemme_sentences.index(i)
 
     # print('\nSimilarity list\n', similarity_list)
     max_similarity = [similarity_list.index(max(similarity_list)), max(similarity_list)]
@@ -76,20 +73,23 @@ def chat(text):  # defining a function that returns response to query using tf-i
 """*************** MAIN **************** """
 flag = True
 
-print("Lyrica: My name is Dot. You can chat with me! If you want to exit, type 'See ya'")
+print("Dot: My name is Dot. You can chat with me! If you want to exit, type 'See ya'")
 while flag:
     user_response = input()
     user_response = user_response.lower()
+    # start_time = time.time()  # Evaluate the chatbot with execution time
     if user_response != 'see ya':
         if user_response == 'thanks' or user_response == 'thank you':
             flag = False
-            print("Lyrica: You are welcome...")
+            print("Dot: You are welcome...")
         else:
             if greeting(user_response) is not None:
-                print("Chatbot: " + greeting(user_response))
+                print("Dot: " + greeting(user_response))
             else:
-                print("Chatbot: ", end="")
+                print("Dot: ", end="")
                 print(chat(user_response))
+                end_time = time.time()
+                # print("Execution time: ", end_time-start_time)
     else:
         flag = False
-        print("Chatbot: Bye! Take care")
+        print("Dot: Bye! Take care")
